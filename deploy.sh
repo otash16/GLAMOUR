@@ -2,8 +2,8 @@
 
 # PRODUCTION
 
-# git checkout master
-# git pull origin master
+git checkout master
+git pull origin master
 
 npm i yarn -g
 yarn global add serve
