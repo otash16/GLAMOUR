@@ -1,3 +1,105 @@
+// import React from "react";
+// import { Box, Container, Stack } from "@mui/material";
+// import { CssVarsProvider } from "@mui/joy/styles";
+
+// import Card from "@mui/joy/Card";
+// import CardCover from "@mui/joy/CardCover";
+// import CardContent from "@mui/joy/CardContent";
+// import Typography from "@mui/joy/Typography";
+// import CardOverflow from "@mui/joy/CardOverflow";
+// import VisibilityIcon from "@mui/icons-material/Visibility";
+// import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+
+// import { useSelector } from "react-redux";
+// import { createSelector } from "reselect";
+// import { retrivePopularDishes } from "./selector";
+// import { Product } from "../../../lib/data/types/product";
+// import { serverApi } from "../../../lib/config";
+
+// /** REDUX SELECTOR */
+// const popularDishesRetriever = createSelector(
+//   retrivePopularDishes,
+//   (popularDishes) => (Array.isArray(popularDishes) ? popularDishes : [])
+// );
+
+// export default function PopularDishes() {
+//   // Selector dan kelgan qiymatni doimo arrayga aylantiramiz
+//   const popularDishes = useSelector(popularDishesRetriever) || [];
+
+//   console.log("popularDishes:", popularDishes);
+
+//   return (
+//     <div className={"popular-dishes-frame"}>
+//       <Container>
+//         <Stack className={"popular-section"}>
+//           <Box className={"category-title"}>Customer Favorites</Box>
+//           <Stack className={"cards-frame"}>
+//             {popularDishes.length > 0 ? (
+//               popularDishes.map((product: Product) => {
+//                 // Agar productImages undefined bo'lsa fallback ""
+//                 const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
+
+//                 return (
+//                   <CssVarsProvider key={product._id}>
+//                     <Card className={"card"}>
+//                       <CardCover>
+//                         <img src={imagePath} alt={product.productName || "Product"} />
+//                       </CardCover>
+//                       <CardCover className={"card-cover"} />
+//                       <CardContent sx={{ justifyContent: "flex-end" }}>
+//                         <Stack flexDirection={"row"} justifyContent={"space-between"}>
+//                           <Typography
+//                             level="h2"
+//                             fontSize="lg"
+//                             textColor="#fff"
+//                             mb={1}
+//                           >
+//                             {product.productName || "No Name"}
+//                           </Typography>
+//                           <Typography
+//                             sx={{
+//                               fontWeight: "md",
+//                               color: "neutral.300",
+//                               alignItems: "center",
+//                               display: "flex",
+//                             }}
+//                           >
+//                             {product.productViews ?? 0}
+//                             <VisibilityIcon sx={{ fontSize: 25, marginLeft: "5px" }} />
+//                           </Typography>
+//                         </Stack>
+//                       </CardContent>
+//                       <CardOverflow
+//                         sx={{
+//                           display: "flex",
+//                           gap: 1.5,
+//                           py: 1.5,
+//                           px: "var(--Card-padding)",
+//                           borderTop: "1px solid",
+//                           height: "60px",
+//                         }}
+//                       >
+//                         <Typography
+//                           startDecorator={<DescriptionOutlinedIcon />}
+//                           textColor="neutral.300"
+//                         >
+//                           {product.productDesc || "No description"}
+//                         </Typography>
+//                       </CardOverflow>
+//                     </Card>
+//                   </CssVarsProvider>
+//                 );
+//               })
+//             ) : (
+//               <Box className="no-data">Popular products are not available!</Box>
+//             )}
+//           </Stack>
+//         </Stack>
+//       </Container>
+//     </div>
+//   );
+// }
+
 import React from "react";
 import { Box, Container, Stack } from "@mui/material";
 import { CssVarsProvider } from "@mui/joy/styles";
@@ -15,16 +117,25 @@ import { createSelector } from "reselect";
 import { retrivePopularDishes } from "./selector";
 import { Product } from "../../../lib/data/types/product";
 import { serverApi } from "../../../lib/config";
+import { RootState } from "../../store"; // AppRootState import qilindi
+import { AppRootState } from "../../../lib/data/types/screen";
 
 /** REDUX SELECTOR */
 const popularDishesRetriever = createSelector(
   retrivePopularDishes,
-  (popularDishes) => (Array.isArray(popularDishes) ? popularDishes : [])
+  (popularDishes): Product[] => {
+    if (!popularDishes) return [];
+    if (Array.isArray(popularDishes)) return popularDishes as Product[];
+    if (typeof popularDishes === "object") return Object.values(popularDishes) as Product[];
+    return [];
+  }
 );
 
 export default function PopularDishes() {
-  // Selector dan kelgan qiymatni doimo arrayga aylantiramiz
-  const popularDishes = useSelector(popularDishesRetriever) || [];
+  // Use selector to get Product[]
+  const popularDishes = useSelector((state: RootState) =>
+    popularDishesRetriever(state)
+  );
 
   console.log("popularDishes:", popularDishes);
 
@@ -35,8 +146,7 @@ export default function PopularDishes() {
           <Box className={"category-title"}>Customer Favorites</Box>
           <Stack className={"cards-frame"}>
             {popularDishes.length > 0 ? (
-              popularDishes.map((product: Product) => {
-                // Agar productImages undefined bo'lsa fallback ""
+              popularDishes.map((product) => {
                 const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
 
                 return (
