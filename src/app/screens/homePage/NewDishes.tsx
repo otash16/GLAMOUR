@@ -28,7 +28,7 @@ const newDishes = [
 ];
 
 export default function NewDishes() {
-  const { newDishes } = useSelector(newDishesRetriever);
+  const { newDishes = [] } = useSelector(newDishesRetriever);
 
   console.log("newDishes:", newDishes);
   return (
