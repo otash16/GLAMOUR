@@ -14,11 +14,11 @@ import { Member } from "../../../lib/data/types/member";
 /** REDUX SELECTOR */
 const topUsersRetriever = createSelector(
   retriveTopUsers,
-  (topUsers) => Array.isArray(topUsers) ? topUsers : [] // har doim array qaytarish
+  (topUsers) => (Array.isArray(topUsers) ? topUsers : []) // har doim array qaytaradi
 );
 
 export default function ActiveUsers() {
-  const topUsers = useSelector(topUsersRetriever);
+  const topUsers = useSelector(topUsersRetriever) || [];
 
   return (
     <div className={"active-users-frame"}>
@@ -34,7 +34,7 @@ export default function ActiveUsers() {
                     <Card key={member._id} variant="outlined" className={"card"}>
                       <CardOverflow>
                         <AspectRatio ratio={1}>
-                          <img src={imagePath} alt={member.memberNick} />
+                          <img src={imagePath} alt={member.memberNick || "Anonymous"} />
                         </AspectRatio>
                       </CardOverflow>
                       <CardOverflow variant="soft" className={"member-detail"}>

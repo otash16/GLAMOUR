@@ -19,11 +19,12 @@ import { serverApi } from "../../../lib/config";
 /** REDUX SELECTOR */
 const popularDishesRetriever = createSelector(
   retrivePopularDishes,
-  (popularDishes) => Array.isArray(popularDishes) ? popularDishes : []
+  (popularDishes) => (Array.isArray(popularDishes) ? popularDishes : [])
 );
 
 export default function PopularDishes() {
-  const popularDishes = useSelector(popularDishesRetriever);
+  // Selector dan kelgan qiymatni doimo arrayga aylantiramiz
+  const popularDishes = useSelector(popularDishesRetriever) || [];
 
   console.log("popularDishes:", popularDishes);
 
@@ -35,26 +36,25 @@ export default function PopularDishes() {
           <Stack className={"cards-frame"}>
             {popularDishes.length > 0 ? (
               popularDishes.map((product: Product) => {
+                // Agar productImages undefined bo'lsa fallback ""
                 const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
+
                 return (
                   <CssVarsProvider key={product._id}>
                     <Card className={"card"}>
                       <CardCover>
-                        <img src={imagePath} alt={product.productName} />
+                        <img src={imagePath} alt={product.productName || "Product"} />
                       </CardCover>
                       <CardCover className={"card-cover"} />
                       <CardContent sx={{ justifyContent: "flex-end" }}>
-                        <Stack
-                          flexDirection={"row"}
-                          justifyContent={"space-between"}
-                        >
+                        <Stack flexDirection={"row"} justifyContent={"space-between"}>
                           <Typography
                             level="h2"
                             fontSize="lg"
                             textColor="#fff"
                             mb={1}
                           >
-                            {product.productName}
+                            {product.productName || "No Name"}
                           </Typography>
                           <Typography
                             sx={{
@@ -64,10 +64,8 @@ export default function PopularDishes() {
                               display: "flex",
                             }}
                           >
-                            {product.productViews}
-                            <VisibilityIcon
-                              sx={{ fontSize: 25, marginLeft: "5px" }}
-                            />
+                            {product.productViews ?? 0}
+                            <VisibilityIcon sx={{ fontSize: 25, marginLeft: "5px" }} />
                           </Typography>
                         </Stack>
                       </CardContent>
