@@ -15,22 +15,16 @@ import { Product } from "../../../lib/data/types/product";
 import { serverApi } from "../../../lib/config";
 import { ProductCollection } from "../../../lib/enums/product.enum";
 
-/** REDUX  SELECTOR */
-const newDishesRetriever = createSelector(retriveNewDishes, (newDishes) => ({
-  newDishes,
-}));
-
-const newDishes = [
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
-];
+/** REDUX SELECTOR */
+const newDishesRetriever = createSelector(retriveNewDishes, (newDishes) =>
+  Array.isArray(newDishes) ? newDishes : []
+);
 
 export default function NewDishes() {
-  const { newDishes = [] } = useSelector(newDishesRetriever);
+  const newDishes = useSelector(newDishesRetriever);
 
   console.log("newDishes:", newDishes);
+
   return (
     <div className={"new-products-frame"}>
       <Container>
@@ -40,21 +34,17 @@ export default function NewDishes() {
             <CssVarsProvider>
               {newDishes.length !== 0 ? (
                 newDishes.map((product: Product) => {
-                  const imagePath = `${serverApi}/${product.productImages[0]}`;
+                  const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
                   const sizeVolume =
                     product.productCollection === ProductCollection.DRINK
                       ? product.productVolume + " L"
                       : product.productSize + " size";
                   return (
-                    <Card
-                      key={product._id}
-                      variant="outlined"
-                      className={"card"}
-                    >
+                    <Card key={product._id} variant="outlined" className={"card"}>
                       <CardOverflow>
                         <div className="product-sale">{sizeVolume}</div>
                         <AspectRatio ratio="1">
-                          <img src={imagePath} alt="" />
+                          <img src={imagePath} alt={product.productName} />
                         </AspectRatio>
                       </CardOverflow>
 

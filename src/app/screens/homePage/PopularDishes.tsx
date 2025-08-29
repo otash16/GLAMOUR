@@ -9,7 +9,6 @@ import Typography from "@mui/joy/Typography";
 import CardOverflow from "@mui/joy/CardOverflow";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-// import dotenv from "dotenv";
 
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -17,17 +16,21 @@ import { retrivePopularDishes } from "./selector";
 import { Product } from "../../../lib/data/types/product";
 import { serverApi } from "../../../lib/config";
 
-/** REDUX  SELECTOR */
+/** REDUX SELECTOR */
 const popularDishesRetriever = createSelector(
   retrivePopularDishes,
-  (popularDishes) => ({ popularDishes })
+  (popularDishes) => popularDishes // faqat arrayni qaytaramiz
 );
 
 export default function PopularDishes() {
-  const { popularDishes } = useSelector(popularDishesRetriever);
+  const popularDishes = useSelector(popularDishesRetriever);
 
-  console.log("popularDishesRetriever:", popularDishesRetriever);
-  console.log("populardishes:", popularDishes);
+  // Agar selector undefined yoki array bo'lmasa, bo'sh array ishlatamiz
+  const popularDishesArray: Product[] = Array.isArray(popularDishes)
+    ? popularDishes
+    : [];
+
+  console.log("popularDishesArray:", popularDishesArray);
 
   return (
     <div className={"popular-dishes-frame"}>
@@ -35,14 +38,14 @@ export default function PopularDishes() {
         <Stack className={"popular-section"}>
           <Box className={"category-title"}>Customer Favorites</Box>
           <Stack className={"cards-frame"}>
-            {popularDishes.length !== 0 ? (
-              popularDishes.map((product: Product) => {
+            {popularDishesArray.length !== 0 ? (
+              popularDishesArray.map((product: Product) => {
                 const imagePath = `${serverApi}/${product.productImages[0]}`;
                 return (
                   <CssVarsProvider key={product._id}>
                     <Card className={"card"}>
                       <CardCover>
-                        <img src={imagePath} alt="" />
+                        <img src={imagePath} alt={product.productName} />
                       </CardCover>
                       <CardCover className={"card-cover"} />
                       <CardContent sx={{ justifyContent: "flex-end" }}>

@@ -11,13 +11,18 @@ import { retriveTopUsers } from "./selector";
 import { serverApi } from "../../../lib/config";
 import { Member } from "../../../lib/data/types/member";
 
-/** REDUX  SELECTOR */
-const topUsersRetriever = createSelector(retriveTopUsers, (topUsers) => ({
-  topUsers,
-}));
+/** REDUX SELECTOR */
+const topUsersRetriever = createSelector(
+  retriveTopUsers,
+  (topUsers) => topUsers // faqat array qaytarish
+);
 
 export default function ActiveUsers() {
-  const { topUsers } = useSelector(topUsersRetriever);
+  const topUsers = useSelector(topUsersRetriever);
+
+  // Agar selector undefined bo'lsa, bo'sh array ishlatamiz
+  const topUsersArray: Member[] = Array.isArray(topUsers) ? topUsers : [];
+
   return (
     <div className={"active-users-frame"}>
       <Container>
@@ -25,8 +30,8 @@ export default function ActiveUsers() {
           <Box className={"category-title"}>Active Users</Box>
           <Stack className={"cards-frame"}>
             <CssVarsProvider>
-              {topUsers.length !== 0 ? (
-                topUsers.map((member: Member) => {
+              {topUsersArray.length !== 0 ? (
+                topUsersArray.map((member: Member) => {
                   const imagePath = `${serverApi}/${member.memberImage}`;
                   return (
                     <Card
@@ -36,7 +41,7 @@ export default function ActiveUsers() {
                     >
                       <CardOverflow>
                         <AspectRatio ratio={"1"}>
-                          <img src={imagePath} alt="" />
+                          <img src={imagePath} alt={member.memberNick} />
                         </AspectRatio>
                       </CardOverflow>
                       <CardOverflow variant="soft" className={"member-detail"}>
