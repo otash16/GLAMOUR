@@ -16,8 +16,9 @@ import { serverApi } from "../../../lib/config";
 import { ProductCollection } from "../../../lib/enums/product.enum";
 
 /** REDUX SELECTOR */
-const newDishesRetriever = createSelector(retriveNewDishes, (newDishes) =>
-  Array.isArray(newDishes) ? newDishes : []
+const newDishesRetriever = createSelector(
+  retriveNewDishes,
+  (newDishes) => Array.isArray(newDishes) ? newDishes : []
 );
 
 export default function NewDishes() {
@@ -32,13 +33,14 @@ export default function NewDishes() {
           <Box className={"category-title"}>Fresh Menu</Box>
           <Stack className={"cards-frame"}>
             <CssVarsProvider>
-              {newDishes.length !== 0 ? (
+              {newDishes.length > 0 ? (
                 newDishes.map((product: Product) => {
                   const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
                   const sizeVolume =
                     product.productCollection === ProductCollection.DRINK
-                      ? product.productVolume + " L"
-                      : product.productSize + " size";
+                      ? `${product.productVolume} L`
+                      : `${product.productSize} size`;
+
                   return (
                     <Card key={product._id} variant="outlined" className={"card"}>
                       <CardOverflow>

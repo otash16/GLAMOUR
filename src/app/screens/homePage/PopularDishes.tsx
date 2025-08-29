@@ -19,18 +19,13 @@ import { serverApi } from "../../../lib/config";
 /** REDUX SELECTOR */
 const popularDishesRetriever = createSelector(
   retrivePopularDishes,
-  (popularDishes) => popularDishes // faqat arrayni qaytaramiz
+  (popularDishes) => Array.isArray(popularDishes) ? popularDishes : []
 );
 
 export default function PopularDishes() {
   const popularDishes = useSelector(popularDishesRetriever);
 
-  // Agar selector undefined yoki array bo'lmasa, bo'sh array ishlatamiz
-  const popularDishesArray: Product[] = Array.isArray(popularDishes)
-    ? popularDishes
-    : [];
-
-  console.log("popularDishesArray:", popularDishesArray);
+  console.log("popularDishes:", popularDishes);
 
   return (
     <div className={"popular-dishes-frame"}>
@@ -38,9 +33,9 @@ export default function PopularDishes() {
         <Stack className={"popular-section"}>
           <Box className={"category-title"}>Customer Favorites</Box>
           <Stack className={"cards-frame"}>
-            {popularDishesArray.length !== 0 ? (
-              popularDishesArray.map((product: Product) => {
-                const imagePath = `${serverApi}/${product.productImages[0]}`;
+            {popularDishes.length > 0 ? (
+              popularDishes.map((product: Product) => {
+                const imagePath = `${serverApi}/${product.productImages?.[0] || ""}`;
                 return (
                   <CssVarsProvider key={product._id}>
                     <Card className={"card"}>
@@ -90,7 +85,7 @@ export default function PopularDishes() {
                           startDecorator={<DescriptionOutlinedIcon />}
                           textColor="neutral.300"
                         >
-                          {product.productDesc}
+                          {product.productDesc || "No description"}
                         </Typography>
                       </CardOverflow>
                     </Card>

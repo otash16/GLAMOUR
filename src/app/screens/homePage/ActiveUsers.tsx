@@ -14,14 +14,11 @@ import { Member } from "../../../lib/data/types/member";
 /** REDUX SELECTOR */
 const topUsersRetriever = createSelector(
   retriveTopUsers,
-  (topUsers) => topUsers // faqat array qaytarish
+  (topUsers) => Array.isArray(topUsers) ? topUsers : [] // har doim array qaytarish
 );
 
 export default function ActiveUsers() {
   const topUsers = useSelector(topUsersRetriever);
-
-  // Agar selector undefined bo'lsa, bo'sh array ishlatamiz
-  const topUsersArray: Member[] = Array.isArray(topUsers) ? topUsers : [];
 
   return (
     <div className={"active-users-frame"}>
@@ -30,23 +27,19 @@ export default function ActiveUsers() {
           <Box className={"category-title"}>Active Users</Box>
           <Stack className={"cards-frame"}>
             <CssVarsProvider>
-              {topUsersArray.length !== 0 ? (
-                topUsersArray.map((member: Member) => {
-                  const imagePath = `${serverApi}/${member.memberImage}`;
+              {topUsers.length > 0 ? (
+                topUsers.map((member: Member) => {
+                  const imagePath = `${serverApi}/${member.memberImage || ""}`;
                   return (
-                    <Card
-                      key={member._id}
-                      variant="outlined"
-                      className={"card"}
-                    >
+                    <Card key={member._id} variant="outlined" className={"card"}>
                       <CardOverflow>
-                        <AspectRatio ratio={"1"}>
+                        <AspectRatio ratio={1}>
                           <img src={imagePath} alt={member.memberNick} />
                         </AspectRatio>
                       </CardOverflow>
                       <CardOverflow variant="soft" className={"member-detail"}>
                         <Typography className={"member-nickname"}>
-                          {member.memberNick}
+                          {member.memberNick || "Anonymous"}
                         </Typography>
                       </CardOverflow>
                     </Card>
